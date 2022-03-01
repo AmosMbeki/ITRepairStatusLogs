@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
+
+import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { addLog } from "../../actions/logActions";
+
 import M from 'materialize-css/dist/js/materialize.min.js';
 
-export const AddLogModal = () => {
+export const AddLogModal = ({addLog}) => {
     const [message, setMessage] = useState('');
     const [attention, setAttention] = useState(false);
     const [tech, setTech] = useState('');
@@ -10,12 +16,21 @@ export const AddLogModal = () => {
         if(message === '' || tech === ''){
             M.toast({html: 'Please enter message and tech'})
         }else{
-            console.log(message, tech, attention);
+            const newLog = {
+                message,
+                attention,
+                tech,
+                date: new Date()
+            }
 
-              // Clear fields
-              setMessage('');
-              setTech('');
-              setAttention(false);
+            addLog(newLog);
+
+            M.toast({html: `Log added by ${tech}`});
+
+            // Clear fields
+            setMessage('');
+            setTech('');
+            setAttention(false);
         }
         
     }
@@ -46,7 +61,7 @@ export const AddLogModal = () => {
                     <div className="input-field">
                         <p>
                             <label>
-                                <input type="checkbox" className="filled-in" checked={attention} value={attention} onChange={e => setAttention('!attention')}/>
+                                <input type="checkbox" className="filled-in" checked={attention} value={attention} onChange={e => setAttention(!attention)}/>
                                 <span>Needs Attention</span>
                             </label>
                         </p>
@@ -60,7 +75,13 @@ export const AddLogModal = () => {
     )
 }
 
+AddLogModal.propTypes = {
+    addLog: PropTypes.func.isRequired
+}
+
 const modalStyle = {
     width: '75%',
     height: '75%'
 }
+
+export default connect(null, {addLog})(AddLogModal);
